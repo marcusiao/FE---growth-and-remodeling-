@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>
+<Xdmf Version="3.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Domain>
+    <Grid Name="TimeSeries" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="mesh" GridType="Uniform">
+        <Topology NumberOfElements="1371" TopologyType="Tetrahedron" NodesPerElement="4">
+          <DataItem Dimensions="1371 4" NumberType="UInt" Format="HDF">Fg_growth_phase.h5:/Mesh/0/mesh/topology</DataItem>
+        </Topology>
+        <Geometry GeometryType="XYZ">
+          <DataItem Dimensions="438 3" Format="HDF">Fg_growth_phase.h5:/Mesh/0/mesh/geometry</DataItem>
+        </Geometry>
+        <Time Value="20" />
+        <Attribute Name="f_1972" AttributeType="Tensor" Center="Node">
+          <DataItem Dimensions="438 9" Format="HDF">Fg_growth_phase.h5:/VisualisationVector/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="mesh" GridType="Uniform">
+        <Topology NumberOfElements="1371" TopologyType="Tetrahedron" NodesPerElement="4">
+          <DataItem Dimensions="1371 4" NumberType="UInt" Format="HDF">Fg_growth_phase.h5:/Mesh/1/mesh/topology</DataItem>
+        </Topology>
+        <Geometry GeometryType="XYZ">
+          <DataItem Dimensions="438 3" Format="HDF">Fg_growth_phase.h5:/Mesh/1/mesh/geometry</DataItem>
+        </Geometry>
+        <Time Value="40" />
+        <Attribute Name="f_1972" AttributeType="Tensor" Center="Node">
+          <DataItem Dimensions="438 9" Format="HDF">Fg_growth_phase.h5:/VisualisationVector/1</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="mesh" GridType="Uniform">
+        <Topology NumberOfElements="1371" TopologyType="Tetrahedron" NodesPerElement="4">
+          <DataItem Dimensions="1371 4" NumberType="UInt" Format="HDF">Fg_growth_phase.h5:/Mesh/2/mesh/topology</DataItem>
+        </Topology>
+        <Geometry GeometryType="XYZ">
+          <DataItem Dimensions="438 3" Format="HDF">Fg_growth_phase.h5:/Mesh/2/mesh/geometry</DataItem>
+        </Geometry>
+        <Time Value="60" />
+        <Attribute Name="f_1972" AttributeType="Tensor" Center="Node">
+          <DataItem Dimensions="438 9" Format="HDF">Fg_growth_phase.h5:/VisualisationVector/2</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="mesh" GridType="Uniform">
+        <Topology NumberOfElements="1371" TopologyType="Tetrahedron" NodesPerElement="4">
+          <DataItem Dimensions="1371 4" NumberType="UInt" Format="HDF">Fg_growth_phase.h5:/Mesh/3/mesh/topology</DataItem>
+        </Topology>
+        <Geometry GeometryType="XYZ">
+          <DataItem Dimensions="438 3" Format="HDF">Fg_growth_phase.h5:/Mesh/3/mesh/geometry</DataItem>
+        </Geometry>
+        <Time Value="80" />
+        <Attribute Name="f_1972" AttributeType="Tensor" Center="Node">
+          <DataItem Dimensions="438 9" Format="HDF">Fg_growth_phase.h5:/VisualisationVector/3</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="mesh" GridType="Uniform">
+        <Topology NumberOfElements="1371" TopologyType="Tetrahedron" NodesPerElement="4">
+          <DataItem Dimensions="1371 4" NumberType="UInt" Format="HDF">Fg_growth_phase.h5:/Mesh/4/mesh/topology</DataItem>
+        </Topology>
+        <Geometry GeometryType="XYZ">
+          <DataItem Dimensions="438 3" Format="HDF">Fg_growth_phase.h5:/Mesh/4/mesh/geometry</DataItem>
+        </Geometry>
+        <Time Value="100" />
+        <Attribute Name="f_1972" AttributeType="Tensor" Center="Node">
+          <DataItem Dimensions="438 9" Format="HDF">Fg_growth_phase.h5:/VisualisationVector/4</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+  </Domain>
+</Xdmf>
