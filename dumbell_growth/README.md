@@ -1,0 +1,1 @@
+Pls download both .xml files and the .py file in the same folder to run it. To prepare the .xml files, you have to modify abaquas.py (more details later) using terminal, then you do the conversion of .inp file to .xml also in terminal by "dolfin-convert input_file.inp output_file.xml"
