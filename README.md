@@ -1,1 +1,1 @@
-Link to the instruction of how to use the model:  https://docs.google.com/spreadsheets/d/1N6FY3qf6DPkMVli9I0u7jqek2RMOWm6SfvFJ5bwTddk/edit?gid=0#gid=0   https://docs.google.com/document/d/1u46kekTMJIPkGtvbK4qfh0jdhFaapn5-7_e7rX2hRxk/edit?usp=sharing
+Link to the instruction of how to use the model:  https://docs.google.com/document/d/1u46kekTMJIPkGtvbK4qfh0jdhFaapn5-7_e7rX2hRxk/edit?usp=sharing
