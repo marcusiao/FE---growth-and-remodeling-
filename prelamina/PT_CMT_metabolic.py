@@ -292,6 +292,8 @@ F_current_sym = get_F3D(u)
 C_sym = F_current_sym.T * F_current_sym
 Ic_sym = tr(C_sym)
 J_sym = det(F_current_sym)
+J_sym_inv_23 = J_sym**(-2.0/3.0)
+Ic_bar_sym = J_sym_inv_23 * Ic_sym
 
 Fe_scar_sym = F_current_sym * inv(F_deposit)
 C_scar_sym = Fe_scar_sym.T * Fe_scar_sym
@@ -300,16 +302,18 @@ J_scar_sym = det(Fe_scar_sym)
 
 # --- Add Anisotropic Structural Invariants to the Variational Equations ---
 I4_sym_axon = dot(n0, C_sym * n0)
-I4_sym_axon_gated = smooth_max(I4_sym_axon, 1.0, eps=1e-6)  # Tension-only structural safety gate
+I4_bar_sym_axon = J_sym_inv_23 * I4_sym_axon
+I4_bar_sym_axon_gated = smooth_max(I4_bar_sym_axon, 1.0, eps=1e-6)  # Tension-only structural safety gate
 
 # Astrocyte processes track their own independent, evolving vector field layout
 I4_sym_astro = dot(n_astro_3d, C_sym * n_astro_3d)
-I4_sym_astro_gated = smooth_max(I4_sym_astro, 1.0, eps=1e-6)
+I4_bar_sym_astro = J_sym_inv_23 * I4_sym_astro
+I4_bar_sym_astro_gated = smooth_max(I4_bar_sym_astro, 1.0, eps=1e-6)
 
 # Mechanical blocks receive the directional resistance additions
-psi_shear_axon  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_sym - 3 - 2 * ln(J_sym)) + (mu_axon_fiber / 2) * (I4_sym_axon_gated - 1)**2)
-psi_shear_astro = theta_astro * ((mu_astro_pure / 2) * (Ic_sym - 3 - 2 * ln(J_sym)) + (mu_astro_fiber / 2) * (I4_sym_astro_gated - 1)**2)
-psi_shear_ecm   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_sym - 3 - 2 * ln(J_sym))
+psi_shear_axon  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_bar_sym - 3) + (mu_axon_fiber / 2) * (I4_bar_sym_axon_gated - 1)**2)
+psi_shear_astro = theta_astro * ((mu_astro_pure / 2) * (Ic_bar_sym - 3) + (mu_astro_fiber / 2) * (I4_bar_sym_astro_gated - 1)**2)
+psi_shear_ecm   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_bar_sym - 3)
 psi_shear_scar  = (theta_ecm - Constant(0.25)) * (mu_ecm_pure / 2) * (Ic_scar_sym - 3 - 2 * ln(J_scar_sym))
 psi_volumetric  = (Constant(lmbda_val) / 2) * (ln(J_sym / theta_total))**2
 
@@ -328,7 +332,6 @@ log_file = open("remodeling_log.txt", "w")
 log_file.write("Step,Avg_ATP,Avg_theta_axon,Max_Ic\n")
 
 # --- Mechanometabolic Parameters ---
-k_remodel = 0.15      # Glial focal adhesion/actin cytoskeleton evolution rate
 A_min = 0.20          # Residual contact area fraction under parallel collapse
 D_eff = 1.0           # Effective lumped Fickian diffusion payload coefficient
 delta_space = 1.0     # Fixed extracellular matrix gap diffusion distance barrier
@@ -350,6 +353,8 @@ F_var = variable(get_F3D(u))
 C_var = F_var.T * F_var
 Ic_var = tr(C_var)
 J_var = det(F_var)
+J_var_inv_23 = J_var**(-2.0/3.0)
+Ic_bar_var = J_var_inv_23 * Ic_var
 
 Fe_scar_var = F_var * inv(F_deposit)
 C_scar_var = Fe_scar_var.T * Fe_scar_var
@@ -358,14 +363,16 @@ J_scar_var = det(Fe_scar_var)
 
 # --- Add Anisotropic Structural Invariants to the Post-Processing Stress Matrix ---
 I4_var_axon = dot(n0, C_var * n0)
-I4_var_axon_gated = smooth_max(I4_var_axon, 1.0, eps=1e-6)
+I4_bar_var_axon = J_var_inv_23 * I4_var_axon
+I4_bar_var_axon_gated = smooth_max(I4_bar_var_axon, 1.0, eps=1e-6)
 
 I4_var_astro = dot(n_astro_3d, C_var * n_astro_3d)
-I4_var_astro_gated = smooth_max(I4_var_astro, 1.0, eps=1e-6)
+I4_bar_var_astro = J_var_inv_23 * I4_var_astro
+I4_bar_var_astro_gated = smooth_max(I4_bar_var_astro, 1.0, eps=1e-6)
 
-psi_axon_v  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_var - 3 - 2 * ln(J_var)) + (mu_axon_fiber / 2) * (I4_var_axon_gated - 1)**2)
-psi_astro_v = theta_astro * ((mu_astro_pure / 2) * (Ic_var - 3 - 2 * ln(J_var)) + (mu_astro_fiber / 2) * (I4_var_astro_gated - 1)**2)
-psi_ecm_v   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_var - 3 - 2 * ln(J_var))
+psi_axon_v  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_bar_var - 3) + (mu_axon_fiber / 2) * (I4_bar_var_axon_gated - 1)**2)
+psi_astro_v = theta_astro * ((mu_astro_pure / 2) * (Ic_bar_var - 3) + (mu_astro_fiber / 2) * (I4_bar_var_astro_gated - 1)**2)
+psi_ecm_v   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_bar_var - 3)
 psi_scar_v  = (theta_ecm - Constant(0.25)) * (mu_ecm_pure / 2) * (Ic_scar_var - 3 - 2 * ln(J_scar_var))
 psi_vol_v   = (Constant(lmbda_val) / 2) * (ln(J_var / theta_total))**2
 
@@ -387,14 +394,19 @@ E_zz = E_neural_var[2, 2]
 angle_strain = 0.5 * atan_2(2.0 * E_xz, E_xx - E_zz + 1e-14)
 n_strain_expr = as_vector((cos(angle_strain), sin(angle_strain)))
 
+# Add analytical 2D maximum principal strain magnitude expression
+E_center = (E_xx + E_zz) / 2.0
+E_radius = sqrt(((E_xx - E_zz) / 2.0)**2 + E_xz**2)
+E1_expr = E_center + E_radius
+
 # Cache fixed reference coordinates prior to streaming the step loops
 n0_arr_2d = n0_func.vector().get_local().reshape(-1, 2)
 
 for gstep in range(1, growth_steps + 1):
     # --- Projections ---
     vm_func.assign(project(vm_expr_G, V_DG0_scalar, form_compiler_parameters={"quadrature_degree": 2}))
-    hoop_func.assign(project(sigma_exact[1, 1], V_DG0_scalar, form_compiler_parameters={"quadrature_degree": 2}))
-    E1_func.assign(project(I4_var_axon, V_DG0_scalar, form_compiler_parameters={"quadrature_degree": 2}))
+    hoop_func.assign(project(sigma_exact[1, 1], V_DG0_scalar, form_compiler_parameters={"quadrature_degree": 2}))    
+    E1_func.assign(project(E1_expr, V_DG0_scalar, form_compiler_parameters={"quadrature_degree": 2}))
     
     n_strain_func = project(n_strain_expr, V_DG0_vec, form_compiler_parameters={"quadrature_degree": 2})
     Ic_e_func = project(Ic_var, V_DG0_scalar, form_compiler_parameters={"quadrature_degree": 2})
@@ -404,9 +416,15 @@ for gstep in range(1, growth_steps + 1):
     n_astro_arr  = n_astro_func.vector().get_local().reshape(-1, 2)
     Ic_e_array   = Ic_e_func.vector().get_local()
     theta_axon_arr = theta_axon.vector().get_local()
+    E1_array = E1_func.vector().get_local()
+
+    # Dynamic, strain-dependent remodeling rate for astrocyte focal adhesions
+    k_remodel_base = 0.15
+    gamma_strain = 10.0
+    k_remodel_array = k_remodel_base * (1.0 + gamma_strain * np.maximum(0.0, E1_array))
 
     # 1. Glial Remodeling: Vector evolution law execution
-    n_astro_arr += dt_growth * k_remodel * (n_strain_arr - n_astro_arr)
+    n_astro_arr += dt_growth * k_remodel_array[:, np.newaxis] * (n_strain_arr - n_astro_arr)
     # Normalize vector coordinates safely
     norms = np.linalg.norm(n_astro_arr, axis=1, keepdims=True) + 1e-14
     n_astro_arr /= norms
@@ -492,6 +510,8 @@ F_current_un = get_F3D(u)
 C_un = F_current_un.T * F_current_un
 Ic_un = tr(C_un)
 J_un = det(F_current_un)
+J_un_inv_23 = J_un**(-2.0/3.0)
+Ic_bar_un = J_un_inv_23 * Ic_un
 
 Fe_scar_un = F_current_un * inv(F_deposit)
 C_scar_un = Fe_scar_un.T * Fe_scar_un
@@ -499,14 +519,16 @@ Ic_scar_un = tr(C_scar_un)
 J_scar_un = det(Fe_scar_un)
 
 I4_un_axon = dot(n0, C_un * n0)
-I4_un_axon_gated = smooth_max(I4_un_axon, 1.0, eps=1e-6)
+I4_bar_un_axon = J_un_inv_23 * I4_un_axon
+I4_bar_un_axon_gated = smooth_max(I4_bar_un_axon, 1.0, eps=1e-6)
 
 I4_un_astro = dot(n_astro_3d, C_un * n_astro_3d)
-I4_un_astro_gated = smooth_max(I4_un_astro, 1.0, eps=1e-6)
+I4_bar_un_astro = J_un_inv_23 * I4_un_astro
+I4_bar_un_astro_gated = smooth_max(I4_bar_un_astro, 1.0, eps=1e-6)
 
-psi_shear_axon_un  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_un - 3 - 2 * ln(J_un)) + (mu_axon_fiber / 2) * (I4_un_axon_gated - 1)**2)
-psi_shear_astro_un = theta_astro * ((mu_astro_pure / 2) * (Ic_un - 3 - 2 * ln(J_un)) + (mu_astro_fiber / 2) * (I4_un_astro_gated - 1)**2)
-psi_shear_ecm_un   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_un - 3 - 2 * ln(J_un))
+psi_shear_axon_un  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_bar_un - 3) + (mu_axon_fiber / 2) * (I4_bar_un_axon_gated - 1)**2)
+psi_shear_astro_un = theta_astro * ((mu_astro_pure / 2) * (Ic_bar_un - 3) + (mu_astro_fiber / 2) * (I4_bar_un_astro_gated - 1)**2)
+psi_shear_ecm_un   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_bar_un - 3)
 psi_shear_scar_un  = (theta_ecm - Constant(0.25)) * (mu_ecm_pure / 2) * (Ic_scar_un - 3 - 2 * ln(J_scar_un))
 psi_volumetric_un  = (Constant(lmbda_val) / 2) * (ln(J_un / theta_total))**2
 
@@ -523,6 +545,8 @@ F_var_U = variable(get_F3D(u))
 C_U = F_var_U.T * F_var_U
 Ic_U = tr(C_U)
 J_U = det(F_var_U)
+J_U_inv_23 = J_U**(-2.0/3.0)
+Ic_bar_U = J_U_inv_23 * Ic_U
 
 Fe_scar_U = F_var_U * inv(F_deposit)
 C_scar_U = Fe_scar_U.T * Fe_scar_U
@@ -530,14 +554,16 @@ Ic_scar_U = tr(C_scar_U)
 J_scar_U = det(Fe_scar_U)
 
 I4_U_axon = dot(n0, C_U * n0)
-I4_U_axon_gated = smooth_max(I4_U_axon, 1.0, eps=1e-6)
+I4_bar_U_axon = J_U_inv_23 * I4_U_axon
+I4_bar_U_axon_gated = smooth_max(I4_bar_U_axon, 1.0, eps=1e-6)
 
 I4_U_astro = dot(n_astro_3d, C_U * n_astro_3d)
-I4_U_astro_gated = smooth_max(I4_U_astro, 1.0, eps=1e-6)
+I4_bar_U_astro = J_U_inv_23 * I4_U_astro
+I4_bar_U_astro_gated = smooth_max(I4_bar_U_astro, 1.0, eps=1e-6)
 
-psi_axon_U  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_U - 3 - 2 * ln(J_U)) + (mu_axon_fiber / 2) * (I4_U_axon_gated - 1)**2)
-psi_astro_U = theta_astro * ((mu_astro_pure / 2) * (Ic_U - 3 - 2 * ln(J_U)) + (mu_astro_fiber / 2) * (I4_U_astro_gated - 1)**2)
-psi_ecm_U   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_var - 3 - 2 * ln(J_var)) 
+psi_axon_U  = theta_axon  * ((mu_axon_pure / 2)  * (Ic_bar_U - 3) + (mu_axon_fiber / 2) * (I4_bar_U_axon_gated - 1)**2)
+psi_astro_U = theta_astro * ((mu_astro_pure / 2) * (Ic_bar_U - 3) + (mu_astro_fiber / 2) * (I4_bar_U_astro_gated - 1)**2)
+psi_ecm_U   = Constant(0.25) * (mu_ecm_pure / 2)   * (Ic_bar_U - 3)
 psi_scar_U  = (theta_ecm - Constant(0.25)) * (mu_ecm_pure / 2) * (Ic_scar_U - 3 - 2 * ln(J_scar_U))
 psi_vol_U   = (Constant(lmbda_val) / 2) * (ln(J_U / theta_total))**2
 
